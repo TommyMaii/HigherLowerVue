@@ -1,4 +1,4 @@
-Run the Index.JS in the HigherLowerApi folder to start the backend.
+Run the Index.JS in the HigherLowerApi folder to start the backend. (run npm install to get packages)
 
 From HigherLowerConsole folder write npm run dev in the terminal to start the frontend.
 
