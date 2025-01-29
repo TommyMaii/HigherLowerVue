@@ -22,8 +22,8 @@ app.get("/GetGames", async (req, res) => {
 })
 
 app.get("/AddGameIds", async (req, res) => {
-    let data = await db.getGamesByAppIds();
-    // let data = await db.getAppIds();
+    // let data = await db.getGamesByAppIds();
+    let data = await db.getAppIds();
     // let customData = JSON.stringify(data).split(",");
     // try {
     //     const result = await db.query(
