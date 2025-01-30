@@ -18,8 +18,8 @@ async function getAppIds(){
     let data;
     const blockedTerms =
         ["test", "soundtrack", "demo","Kickstarter", "Sex", "18", "Porn", "NSFW", "DLC","Outfit", "Pack", "Dragon's Dogma 2", "Naughty", "Red-Light", "Red light", "Dick", "Pussy", "Beat Saber",
-        "Mother", "Gay", "Costume"];
-
+        "Mother", "Gay", "Costume", "Succubus", "Suck", "Penis", "Hentai", "Erotic", "Adult Only","Nudity","Lewd",  "Explicit", "Visual Novel", "Dating Sim", "Yaoi", "Yuri", "BDSM", "Waifu"
+        , "Eroge", "Uncensored"];
 
     await axios.get(allGameURL).then(function (res) {
         data = res.data['applist']['apps'];
@@ -33,22 +33,43 @@ async function getAppIds(){
             count++;
             continue;
         }
-        console.log(data[i]);
         AppIds.push(data[i]['appid']);
     }
     return AppIds;
 }
 
-async function getGamesByAppIds(){
-    let AppIds = await getAppIds();
+async function getGamesByAppIds(inputArray){
     let data = [];
-    let count = 100;
-    for(let i = 0; i < 2; i++){
-        await axios.get(`https://store.steampowered.com/api/appdetails?appids=${AppIds[i]}`).then(function (res) {
-            data.push(res);
-            console.log(data[i].data[`${AppIds[i]}`]);
-        })
+    let returnData = [];
+    try{
+        for(let i = 0; i < inputArray.length-2; i++){
+            // let hasPrice = true;
+            // let hasReviews = true;
+            let jsonObject = {};
+
+            await axios.get(`https://store.steampowered.com/api/appdetails?appids=${inputArray[i]}`).then(function (res) {
+                // if(data[i].data[`${AppIds[i]}`]['data']['price_overview'] === undefined) {
+                //     hasPrice = false;
+                // }
+                // if(!(data[i].data[`${AppIds[i]}`]['data']['recommendations'] === undefined) || data[i].data[`${AppIds[i]}`]['data']['recommendations'] === '0') {
+                //     hasReviews = false;
+                // }
+                data.push(res);
+                jsonObject = {
+                    "AppId": data[i].data[`${inputArray[i]}`]['data']['steam_appid'],
+                    "Name": data[i].data[`${inputArray[i]}`]['data']['name'],
+                    "Image": data[i].data[`${inputArray[i]}`]['data']['header_image'],
+                    "Date": data[i].data[`${inputArray[i]}`]['data']['release_date']['date'],
+                    // "Price": hasPrice ? data[i].data[`${AppIds[i]}`]['data']['price_overview']['final_formatted'] : 0,
+                    // "Reviews": hasReviews ?  data[i].data[`${AppIds[i]}`]['data']['recommendations']['total'] : 0,
+                }
+                returnData.push(jsonObject)
+            })
+        }
+    }catch(error){
+        console.log(error);
     }
+    return returnData;
 }
 
 //Data to save
@@ -63,9 +84,7 @@ async function getGamesByAppIds(){
 //Date
 // console.log(data[i].data[`${AppIds[i]}`]['data']['release_date']['date'])
 // Price
-//if(data[i].data[`${AppIds[i]}`]['data']['price_overview']){console.log(data[i].data[`${AppIds[i]}`]['data']['price_overview']['final_formatted']);}
-//GetImage
-// console.log(data[i].data[`${AppIds[i]}`]['data']['header_image']);
+//if(data[i].data[`${AppIds[i]}`]['data']['price_overview']){console.log();}
 
 module.exports = {
     query: (text, params) => pool.query(text, params)
