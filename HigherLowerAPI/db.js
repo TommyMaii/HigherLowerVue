@@ -24,7 +24,8 @@ async function getAppIds(){
     await axios.get(allGameURL).then(function (res) {
         data = res.data['applist']['apps'];
     })
-    for(let i = 0; i < count; i++){
+    for(let i = 0; i < data.length; i++){
+        console.log(data)
         const gameName = data[i]['name'];
         const shouldSkipGame = blockedTerms.some((term) =>
             gameName.toLowerCase().includes(term.toLowerCase()),
@@ -42,34 +43,53 @@ async function getGamesByAppIds(inputArray){
     let data = [];
     let returnData = [];
     try{
-        for(let i = 0; i < inputArray.length-2; i++){
-            // let hasPrice = true;
-            // let hasReviews = true;
+        for(let i = 0; i < 1; i++){
             let jsonObject = {};
-
             await axios.get(`https://store.steampowered.com/api/appdetails?appids=${inputArray[i]}`).then(function (res) {
-                // if(data[i].data[`${AppIds[i]}`]['data']['price_overview'] === undefined) {
-                //     hasPrice = false;
-                // }
-                // if(!(data[i].data[`${AppIds[i]}`]['data']['recommendations'] === undefined) || data[i].data[`${AppIds[i]}`]['data']['recommendations'] === '0') {
-                //     hasReviews = false;
-                // }
                 data.push(res);
-                jsonObject = {
-                    "AppId": data[i].data[`${inputArray[i]}`]['data']['steam_appid'],
-                    "Name": data[i].data[`${inputArray[i]}`]['data']['name'],
-                    "Image": data[i].data[`${inputArray[i]}`]['data']['header_image'],
-                    "Date": data[i].data[`${inputArray[i]}`]['data']['release_date']['date'],
-                    // "Price": hasPrice ? data[i].data[`${AppIds[i]}`]['data']['price_overview']['final_formatted'] : 0,
-                    // "Reviews": hasReviews ?  data[i].data[`${AppIds[i]}`]['data']['recommendations']['total'] : 0,
-                }
-                returnData.push(jsonObject)
             })
+            let isfree = false;
+            let hasRecommendations = true;
+            let hasNotes = true;
+            if(data[i].data[`${inputArray[i]}`]['success'] === false){ continue }
+            console.log(data[i].data[`${inputArray[i]}`]['data'])
+            if(data[i].data[`${inputArray[i]}`]['data']['content_descriptors']['notes'] === "null"){ hasNotes = false }
+            if(hasNotes === true) {
+                if(data[i].data[`${inputArray[i]}`]['data']['content_descriptors']['notes'].toLowerCase().includes("sex")){
+                    continue;
+                }
+            }
+            let type = data[i].data[`${inputArray[i]}`]['data']['type'];
+            if(data[i].data[`${inputArray[i]}`]['data']['name'].includes("Playtest") || data[i].data[`${inputArray[i]}`]['data']['name'].includes("playtest")){ continue }
+            if(data[i].data[`${inputArray[i]}`]['data']['release_date']['coming_soon']) { continue }
+            if(type.includes('dlc') || type.includes('soundtrack') || type.includes('movie') || type.includes('episode')){ continue }
+            if(data[i].data[`${inputArray[i]}`]['data']['is_free'] === true) { isfree = true }
+            if(!data[i].data[`${inputArray[i]}`]['data']['recommendations']) { hasRecommendations = false}
+            if(isfree === false && !data[i].data[`${inputArray[i]}`]['data']['price_overview']) { continue }
+            console.log(data[i].data[`${inputArray[i]}`]['data'])
+            jsonObject = {
+                "AppId": data[i].data[`${inputArray[i]}`]['data']['steam_appid'],
+                "Name": data[i].data[`${inputArray[i]}`]['data']['name'],
+                "Image": data[i].data[`${inputArray[i]}`]['data']['header_image'],
+                "Date": data[i].data[`${inputArray[i]}`]['data']['release_date']['date'],
+                "Price": isfree ? "Free" : data[i].data[`${inputArray[i]}`]['data']['price_overview']['final_formatted'],
+                "Reviews": hasRecommendations ? data[i].data[`${inputArray[i]}`]['data']['recommendations']['total'] : 0,
+            }
+                returnData.push(jsonObject)
         }
     }catch(error){
         console.log(error);
     }
     return returnData;
+}
+
+async function Get200FilteredAppIds(inputArray) {
+    let AppIds = [];
+    for(let i = 0; i < 200; i++){
+    let randomNumber = Math.floor(Math.random()*100000);
+        AppIds.push(inputArray[randomNumber]);
+    }
+    return AppIds;
 }
 
 //Data to save
@@ -91,5 +111,6 @@ module.exports = {
 };
 module.exports.getAppIds = getAppIds;
 module.exports.getGamesByAppIds = getGamesByAppIds;
+module.exports.get200FilteredAppIds = Get200FilteredAppIds;
 
 
