@@ -43,37 +43,44 @@ async function getGamesByAppIds(inputArray){
     let data = [];
     let returnData = [];
     try{
-        for(let i = 0; i < 1; i++){
+        for(let i = 0; i < inputArray.length; i++){
             let jsonObject = {};
             await axios.get(`https://store.steampowered.com/api/appdetails?appids=${inputArray[i]}`).then(function (res) {
                 data.push(res);
             })
             let isfree = false;
             let hasRecommendations = true;
-            let hasNotes = true;
             if(data[i].data[`${inputArray[i]}`]['success'] === false){ continue }
-            console.log(data[i].data[`${inputArray[i]}`]['data'])
-            if(data[i].data[`${inputArray[i]}`]['data']['content_descriptors']['notes'] === "null"){ hasNotes = false }
-            if(hasNotes === true) {
-                if(data[i].data[`${inputArray[i]}`]['data']['content_descriptors']['notes'].toLowerCase().includes("sex")){
-                    continue;
+            let gameData = data[i].data[`${inputArray[i]}`]['data'];
+            console.log(gameData)
+            if(gameData['content_descriptors']['notes'] !== null){
+                if(gameData['content_descriptors']['notes'].toLowerCase().includes("sex") || gameData['content_descriptors']['notes'].includes("nudity") || gameData['content_descriptors']['notes'].includes("naked")){ continue }
+            }
+            if(gameData['ratings']){
+                if(gameData['ratings']['dejus']){
+                    if(gameData['ratings']['dejus']['descriptors']){
+                        if(gameData['ratings']['dejus']['descriptors'].toLowerCase().includes("sex")){ continue}
+                    }
                 }
             }
-            let type = data[i].data[`${inputArray[i]}`]['data']['type'];
-            if(data[i].data[`${inputArray[i]}`]['data']['name'].includes("Playtest") || data[i].data[`${inputArray[i]}`]['data']['name'].includes("playtest")){ continue }
-            if(data[i].data[`${inputArray[i]}`]['data']['release_date']['coming_soon']) { continue }
-            if(type.includes('dlc') || type.includes('soundtrack') || type.includes('movie') || type.includes('episode')){ continue }
-            if(data[i].data[`${inputArray[i]}`]['data']['is_free'] === true) { isfree = true }
-            if(!data[i].data[`${inputArray[i]}`]['data']['recommendations']) { hasRecommendations = false}
-            if(isfree === false && !data[i].data[`${inputArray[i]}`]['data']['price_overview']) { continue }
-            console.log(data[i].data[`${inputArray[i]}`]['data'])
+            if(gameData['steam_germany']){
+                if(gameData['steam_germany']['descriptors'].toLowerCase().includes("sex")){ continue }
+                console.log(gameData['steam_germany'])
+            }
+            let type = gameData['type'];
+            if(gameData['name'].includes("Playtest") || data[i].data[`${inputArray[i]}`]['data']['name'].includes("playtest")){ continue }
+            if(gameData['release_date']['coming_soon']) { continue }
+            if(type.includes('dlc') || type.includes('soundtrack') || type.includes('movie') || type.includes('episode') || type.includes('demo') || type.includes('series') || type.includes('music')){ continue }
+            if(gameData['is_free'] === true) { isfree = true }
+            if(!gameData['recommendations']) { hasRecommendations = false}
+            if(isfree === false && !gameData['price_overview']) { continue }
             jsonObject = {
-                "AppId": data[i].data[`${inputArray[i]}`]['data']['steam_appid'],
-                "Name": data[i].data[`${inputArray[i]}`]['data']['name'],
-                "Image": data[i].data[`${inputArray[i]}`]['data']['header_image'],
-                "Date": data[i].data[`${inputArray[i]}`]['data']['release_date']['date'],
-                "Price": isfree ? "Free" : data[i].data[`${inputArray[i]}`]['data']['price_overview']['final_formatted'],
-                "Reviews": hasRecommendations ? data[i].data[`${inputArray[i]}`]['data']['recommendations']['total'] : 0,
+                "app_id": gameData['steam_appid'],
+                "name": gameData['name'],
+                "image": gameData['header_image'],
+                "date": gameData['release_date']['date'],
+                "price": isfree ? "Free" : gameData['price_overview']['final_formatted'],
+                "reviews": hasRecommendations ? gameData['recommendations']['total'] : 0,
             }
                 returnData.push(jsonObject)
         }
@@ -83,9 +90,9 @@ async function getGamesByAppIds(inputArray){
     return returnData;
 }
 
-async function Get200FilteredAppIds(inputArray) {
+async function GetFilteredAppIds(inputArray) {
     let AppIds = [];
-    for(let i = 0; i < 200; i++){
+    for(let i = 0; i < 500; i++){
     let randomNumber = Math.floor(Math.random()*100000);
         AppIds.push(inputArray[randomNumber]);
     }
@@ -111,6 +118,6 @@ module.exports = {
 };
 module.exports.getAppIds = getAppIds;
 module.exports.getGamesByAppIds = getGamesByAppIds;
-module.exports.get200FilteredAppIds = Get200FilteredAppIds;
+module.exports.GetFilteredAppIds = GetFilteredAppIds;
 
 
