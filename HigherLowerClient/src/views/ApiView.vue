@@ -1,39 +1,54 @@
 <template>
-  <h1>Games</h1>
   <div v-if="games.length <= 0">
     <h2>Loading...</h2>
   </div>
-  <div v-else v-for="n in 115" >
-    <h2>{{games[0]['gamedata'][n-1]['Name']}}</h2>
-    <h5>{{games[0]['gamedata'][n-1]['Date']}}</h5>
-    <h5>{{games[0]['gamedata'][n-1]['AppId']}}</h5>
-    <img :src="games[0]['gamedata'][n-1]['Image']"/>
+  <div v-else>
+    <h1 style="align-content: center; justify-content: center; margin-bottom:20%; position:fixed; top: 20%">Gjett hvilket spill som koster mest!</h1>
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); grid-gap: 200px;">
+    <div @click="firstCounter+=2; secondCounter+=2" style="height:30%">
+      <h2>{{games[0]['gamedata'][firstCounter]['name']}}</h2>
+      <h5>{{games[0]['gamedata'][firstCounter]['date']}}</h5>
+      <h5>{{games[0]['gamedata'][firstCounter]['price']}}</h5>
+      <img :src="games[0]['gamedata'][firstCounter]['image']" alt="Source is corrupt, pretend theres a fine picture here =)"/>
+    </div>
+
+    <div @click="firstCounter+=2; secondCounter+=2" style="height:30%">
+      <h2>{{games[0]['gamedata'][secondCounter]['name']}}</h2>
+      <h5>{{games[0]['gamedata'][secondCounter]['date']}}</h5>
+      <img :src="games[0]['gamedata'][secondCounter]['image']" alt="Source is corrupt, pretend theres a fine picture here =)"/>
+    </div>
+    </div>
   </div>
+
 </template>
 
 
 
 
 <script>
-import axios from "axios";
+import {ref} from 'vue'
 
-const loading = ref(false)
-import {ref, watch} from 'vue'
 
 export default {
+setup(){
+  let firstCounter = ref(0)
+  let secondCounter = ref(1)
+    return {firstCounter, secondCounter}
+},
   data () {
     return {
-      games: []
+      games: [],
+
     }
   },
   async beforeMount() {
     await fetch('http://localhost:3000/GetGamesInfo')
       .then(res => res.json())
       .then(data => this.games = data)
-      .then(data => console.log(this.games))
       .catch(err => console.log(err))
-  }
+  },
 }
+
 // const post = ref()
 
 // async function fetchData(){
