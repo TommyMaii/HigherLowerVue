@@ -55,36 +55,25 @@ app.post("/AddGameIds", async (req, res) => {
     }
 })
 
-app.get("/get200appids", async (req, res) => {
+app.post("/AddRandomGames", async (req, res) => {
     let appIds;
     try {
         appIds = await db.query('SELECT * FROM gameappids');
     }catch (e){
         console.error(e);
     }
-    let filteredAppIds = await db.get200FilteredAppIds(appIds.rows[0]['appids']);
-    // let data = await db.getGamesByAppIds(filteredAppIds)
-})
-
-app.post("/Add200RandomGames", async (req, res) => {
-    let appIds;
-    try {
-        appIds = await db.query('SELECT * FROM gameappids');
-    }catch (e){
-        console.error(e);
-    }
-    let data = await db.getGamesByAppIds(await db.get200FilteredAppIds(appIds.rows[0]['appids']));
+    let data = await db.getGamesByAppIds(await db.GetFilteredAppIds(appIds.rows[0]['appids']));
     let customData = JSON.stringify(data).replaceAll("'", "");
-    // try {
-    //     const result = await db.query(
-    //         `INSERT into games (gamedata) values ('${customData}')`
-    //     );
-    //     console.log("Pushed Data");
-    //     res.json(result.rows);
-    // } catch (err) {
-    //     console.error(err);
-    //     res.status(500).send('Internal Server Error');
-    // }
+    try {
+        const result = await db.query(
+            `INSERT into games (gamedata) values ('${customData}')`
+        );
+        console.log("Pushed Data");
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Internal Server Error');
+    }
 })
 
 app.post("/AddGameData", async (req, res) => {
