@@ -50,12 +50,16 @@ async function getGamesByAppIds(inputArray){
             })
             let isfree = false;
             let hasRecommendations = true;
+
             if(data[i].data[`${inputArray[i]}`]['success'] === false){ continue }
+
             let gameData = data[i].data[`${inputArray[i]}`]['data'];
-            console.log(gameData)
+            let type = gameData['type'];
+
             if(gameData['content_descriptors']['notes'] !== null){
                 if(gameData['content_descriptors']['notes'].toLowerCase().includes("sex") || gameData['content_descriptors']['notes'].includes("nudity") || gameData['content_descriptors']['notes'].includes("naked")){ continue }
             }
+
             if(gameData['ratings']){
                 if(gameData['ratings']['dejus']){
                     if(gameData['ratings']['dejus']['descriptors']){
@@ -63,23 +67,25 @@ async function getGamesByAppIds(inputArray){
                     }
                 }
             }
+
             if(gameData['steam_germany']){
                 if(gameData['steam_germany']['descriptors'].toLowerCase().includes("sex")){ continue }
                 console.log(gameData['steam_germany'])
             }
-            let type = gameData['type'];
+
             if(gameData['name'].includes("Playtest") || data[i].data[`${inputArray[i]}`]['data']['name'].includes("playtest")){ continue }
             if(gameData['release_date']['coming_soon']) { continue }
             if(type.includes('dlc') || type.includes('soundtrack') || type.includes('movie') || type.includes('episode') || type.includes('demo') || type.includes('series') || type.includes('music')){ continue }
             if(gameData['is_free'] === true) { isfree = true }
             if(!gameData['recommendations']) { hasRecommendations = false}
             if(isfree === false && !gameData['price_overview']) { continue }
+
             jsonObject = {
                 "app_id": gameData['steam_appid'],
                 "name": gameData['name'],
                 "image": gameData['header_image'],
                 "date": gameData['release_date']['date'],
-                "price": isfree ? "Free" : gameData['price_overview']['final_formatted'],
+                "price": isfree ? 0 : gameData['price_overview']['final_formatted'],
                 "reviews": hasRecommendations ? gameData['recommendations']['total'] : 0,
             }
                 returnData.push(jsonObject)
