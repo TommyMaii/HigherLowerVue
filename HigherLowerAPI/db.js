@@ -46,6 +46,9 @@ async function getGamesByAppIds(inputArray){
         for(let i = 0; i < inputArray.length; i++){
             let jsonObject = {};
             await axios.get(`https://store.steampowered.com/api/appdetails?appids=${inputArray[i]}`).then(function (res) {
+            if(i % 50 === 0){
+                setTimeout(() =>{},50000);
+            }
                 data.push(res);
             })
             let isfree = false;
@@ -85,7 +88,7 @@ async function getGamesByAppIds(inputArray){
                 "name": gameData['name'],
                 "image": gameData['header_image'],
                 "date": gameData['release_date']['date'],
-                "price": isfree ? 0 : gameData['price_overview']['final_formatted'],
+                "price": isfree ? '0 kr' : gameData['price_overview']['final_formatted'],
                 "reviews": hasRecommendations ? gameData['recommendations']['total'] : 0,
             }
                 returnData.push(jsonObject)
@@ -98,7 +101,7 @@ async function getGamesByAppIds(inputArray){
 
 async function GetFilteredAppIds(inputArray) {
     let AppIds = [];
-    for(let i = 0; i < 500; i++){
+    for(let i = 0; i < 1000; i++){
     let randomNumber = Math.floor(Math.random()*100000);
         AppIds.push(inputArray[randomNumber]);
     }
