@@ -5,13 +5,13 @@
   <div v-else>
       <h1 style="align-content: center; justify-content: center; margin-bottom:20%; position:fixed; top: 20%">Guess what game is more expensive!</h1>
       <div style="display: grid; grid-template-columns: repeat(2, 1fr); grid-gap: 200px;">
-      <div @click="showPriceAfterGuess">
+      <div @click="calculatePriceAfterGameClick(true,false)">
         <h2 style="overflow: hidden">{{games[0]['gamedata'][firstCounter]['name']}}</h2>
 <!--        <h5>{{games[0]['gamedata'][firstCounter]['date']}}</h5>-->
         <img :src="games[0]['gamedata'][firstCounter]['image']" alt="Source is corrupt, pretend theres a fine picture here =)"/>
         <h2>The price is: {{games[0]['gamedata'][firstCounter]['price']}}</h2>
       </div>
-      <div @click="calculatePriceAfterFirstGameClicked">
+      <div @click="calculatePriceAfterGameClick(false,true)">
         <h2 style="overflow: hidden">{{games[0]['gamedata'][secondCounter]['name']}}</h2>
 <!--        <h5>{{games[0]['gamedata'][secondCounter]['date']}}</h5>-->
         <img :src="games[0]['gamedata'][secondCounter]['image']" alt="Source is corrupt, pretend theres a fine picture here =)"/>
@@ -40,8 +40,9 @@ setup(){
       showPrice: ref(false),
       isFirstGameMoreExpensive : ref(false),
       isDraw : ref(false),
-      clickedFirstGame: ref(false),
       score : ref(0),
+      clickedFirstGame: ref(false),
+      clickedSecondGame: ref(false),
     }
   },
   methods: {
@@ -49,31 +50,31 @@ setup(){
     if(this.clickedFirstGame && this.isFirstGameMoreExpensive){
       this.score++;
     }
-    if(!this.clickedFirstGame && !this.isFirstGameMoreExpensive){
+    if(this.clickedSecondGame && !this.isFirstGameMoreExpensive){
       this.score++;
     }
   },
-  calculatePriceFirstGameClicked(){
+  calculatePriceAfterGameClick(isFirstClicked, isSecondClicked){
     this.isFirstGameMoreExpensive = false;
-    this.clickedFirstGame = true;
+    this.clickedFirstGame = isFirstClicked;
+    this.clickedSecondGame = isSecondClicked
     let data = this.games[0]['gamedata'];
     this.isFirstGameMoreExpensive = parseFloat(data[this.firstCounter]['price'].split(",")[0]) > parseFloat(data[this.secondCounter]['price'].split(" ")[0]);
     this.isDraw = parseFloat(data[this.firstCounter]['price'].split(",")[0]) === parseFloat(data[this.secondCounter]['price'].split(" ")[0]);
+
+    this.showPriceAfterGuess()
   },
-    calculatePriceSecondGameClicked(){
-    this.clickedFirstGame = false;
-    },
     showPriceAfterGuess(){
       this.showPrice = true;
-      this.calculatePriceFirstGameClicked();
       this.calculateScore();
       setTimeout(()=>{
         this.incrementCounters();
         this.showPrice = false;
         this.isDraw = false;
-        this.clickedFirstGame = true;
+        this.clickedFirstGame = false;
+        this.clickedSecondGame = false;
 
-      }, 1500);
+      }, 3000);
 
     } ,
     incrementCounters(){
