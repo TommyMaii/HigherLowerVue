@@ -4,6 +4,10 @@ var cors = require('cors');
 const {getAppIds} = require("./db");
 const app = express();
 require("dotenv").config();
+var bodyParser = require('body-parser')
+
+app.use(bodyParser.json({ type: 'application/*+json' }))
+app.use(bodyParser.json())
 
 app.use(cors());
 
@@ -33,6 +37,30 @@ app.get("/GetDbIds", async (req, res) => {
 app.get("/GetGamesInfo", async (req, res) => {
     try {
         const result = await db.query('SELECT * FROM games');
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Internal Server Error');
+    }
+})
+
+app.get("/GetHighScore", async (req, res) => {
+    try {
+        const result = await db.query('SELECT * FROM highscores');
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Internal Server Error');
+    }
+})
+
+app.put("/UpdateHighscore", async (req, res) => {
+    try {
+        let data = JSON.stringify(req.body.highscore)
+        const result = await db.query(
+            `UPDATE highscores SET highscore = ${data} WHERE id = 1`
+        );
+        console.log("Updated highscore");
         res.json(result.rows);
     } catch (err) {
         console.error(err);
