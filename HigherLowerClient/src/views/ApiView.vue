@@ -19,7 +19,7 @@
       </div>
 
         <h1>The most expensive game was: {{showPrice ? games[0]['gamedata'][isFirstGameMoreExpensive ? firstCounter : secondCounter]['price'] : "" || isDraw ? "Both are the same price you get a free pass" : ""}}</h1>
-        <h2>{{ this.Message }}</h2>
+        <h1>{{ this.Message }}</h1>
         <h1>Your score: {{score}}</h1>
     </div>
   </div>
@@ -35,7 +35,8 @@ setup(){
 },
   data () {
     return {
-      highscore : 1,
+      highscore : ref(0),
+      databaseHighscore : ref(0),
       games: [],
       firstCounter : ref(0),
       secondCounter : ref(1),
@@ -64,11 +65,16 @@ setup(){
       if(this.highscore < this.score) {this.highscore = this.score;}
       return this.Message = "Correct +1 score!";
     }
+
     this.Message = "You lost, better luck next time!";
-    pushHighscoreAfterLoss(this.score);
-    setTimeout(()=>{
-      location.reload();
-    }, 2000)
+    if(this.highscore > this.databaseHighscore) {
+      pushHighscoreAfterLoss(this.highscore);
+      this.Message = "You lost, but you got a new high score!"
+    }
+      setTimeout(()=>{
+        location.reload();
+      }, 2000)
+
 
   },
   calculatePriceAfterGameClick(isFirstClicked, isSecondClicked){
@@ -103,7 +109,8 @@ setup(){
   async beforeMount() {
     await fetch('http://localhost:3000/GetHighScore')
      .then(res => res.json())
-     .then(data => this.highscore = data[0]['highscore']);
+     .then(data => this.highscore= data[0]['highscore'])
+      .then(data => this.databaseHighscore = data);
     await fetch('http://localhost:3000/GetGamesInfo')
       .then(res => res.json())
       .then(data => this.games = data)
