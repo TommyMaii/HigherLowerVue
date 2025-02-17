@@ -35,9 +35,9 @@ setup(){
 },
   data () {
     return {
+      games: [],
       highscore : ref(0),
       databaseHighscore : ref(0),
-      games: [],
       firstCounter : ref(0),
       secondCounter : ref(1),
       showPrice: ref(false),
