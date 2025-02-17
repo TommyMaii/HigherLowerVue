@@ -104,6 +104,27 @@ app.post("/AddRandomGames", async (req, res) => {
     }
 })
 
+app.post("/addTest", async (req, res) => {
+    let appIds;
+    try {
+        appIds = await db.query('SELECT * FROM gameappids');
+    }catch (e){
+        console.error(e);
+    }
+    let data = await db.getGamesByAppIds(await db.GetFilteredAppIds(appIds.rows[0]['appids']));
+    let customData = JSON.stringify(data).replaceAll("'", "");
+    // try {
+    //     const result = await db.query(
+    //         `INSERT into games (gamedata) values ('${customData}')`
+    //     );
+    //     console.log("Pushed Data");
+    //     res.json(result.rows);
+    // } catch (err) {
+    //     console.error(err);
+    //     res.status(500).send('Internal Server Error');
+    // }
+})
+
 app.post("/AddGameData", async (req, res) => {
     const result = await db.query('SELECT * FROM gameappids');
     let data = await db.getGamesByAppIds(result.rows[0]['appids']);
