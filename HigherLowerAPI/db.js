@@ -42,56 +42,70 @@ async function getGamesByAppIds(inputArray){
     let data = [];
     let returnData = [];
     try{
-        for(let i = 0; i < inputArray.length; i++){
-            let jsonObject = {};
+        // for(let i = 0; i < inputArray.length; i++){
+        //     let jsonObject = {};
+        //
+        //     if(i % 50 === 0){
+        //         setTimeout(()=>{}, 60000)
+        //     }
 
-            if(i % 50 === 0){
-                setTimeout(()=>{}, 60000)
-            }
+            let filteredGameArray = [];
+            let jsonObject = {}
+            const responses = await Promise.allSettled(inputArray.map(appid => axios.get(`https://store.steampowered.com/api/appdetails?appids=${appid}`)))
 
-            await axios.get(`https://store.steampowered.com/api/appdetails?appids=${inputArray[i]}`).then(function (res) {
-                data.push(res);
+             let something = await responses.filter(result => result.status === "fulfilled").map(result => result.value.data).flatMap(gameData => {
+                filteredGameArray.push(
+                    jsonObject = {
+                    "app_id": gameData['steam_appid'],
+                    "name": gameData['name'],
+                    "image": gameData['header_image'],
+                    "date": gameData['release_date']['date'],
+                    "price": gameData['price_overview']['final_formatted'],
+                    "reviews": gameData['recommendations']['total'],
+                })
             })
 
-            let isfree = false;
-            let hasRecommendations = true;
+            console.log(something)
 
-            if(data[i].data[`${inputArray[i]}`]['success'] === false){ continue }
-
-            let gameData = data[i].data[`${inputArray[i]}`]['data'];
-            let type = gameData['type'];
-
-            if(!hasContentDescriptor(gameData['content_descriptors']['notes'])){
-                let data = gameData['content_descriptors']['notes'];
-                if(data.toLowerCase().includes("sex") ||
-                    data.toLowerCase().includes("nudity") || data.toLowerCase().includes("naked")){ continue }
-            }
-
-            if(gameData['ratings'] && gameData['ratings']['dejus'] && gameData['ratings']['dejus']['descriptors']){
-                if(gameData['ratings']['dejus']['descriptors'].toLowerCase().includes("sex")){ continue}
-            }
-
-            if(!hasSteamGermany(gameData['steam_germany'])){
-                if(gameData['steam_germany']['descriptors'].toLowerCase().includes("sex")){ continue }
-            }
-
-            if(gameData['name'].toLowerCase().includes("playtest")){ continue }
-            if(gameData['release_date']['coming_soon']) { continue }
-            if(type !== 'game'){ continue }
-            if(gameData['is_free'] === true) { isfree = true }
-            if(!gameData['recommendations']) { hasRecommendations = false}
-            if(isfree === false && !gameData['price_overview']) { continue }
-
-            jsonObject = {
-                "app_id": gameData['steam_appid'],
-                "name": gameData['name'],
-                "image": gameData['header_image'],
-                "date": gameData['release_date']['date'],
-                "price": isfree ? '0 kr' : gameData['price_overview']['final_formatted'],
-                "reviews": hasRecommendations ? gameData['recommendations']['total'] : 0,
-            }
-                returnData.push(jsonObject)
-        }
+        //     let isfree = false;
+        //     let hasRecommendations = true;
+        //
+        //     if(data[i].data[`${inputArray[i]}`]['success'] === false){ continue }
+        //
+        //     let gameData = data[i].data[`${inputArray[i]}`]['data'];
+        //     let type = gameData['type'];
+        //
+        //     if(!hasContentDescriptor(gameData['content_descriptors']['notes'])){
+        //         let data = gameData['content_descriptors']['notes'];
+        //         if(data.toLowerCase().includes("sex") ||
+        //             data.toLowerCase().includes("nudity") || data.toLowerCase().includes("naked")){ continue }
+        //     }
+        //
+        //     if(gameData['ratings'] && gameData['ratings']['dejus'] && gameData['ratings']['dejus']['descriptors']){
+        //         if(gameData['ratings']['dejus']['descriptors'].toLowerCase().includes("sex")){ continue}
+        //     }
+        //
+        //     if(!hasSteamGermany(gameData['steam_germany'])){
+        //         if(gameData['steam_germany']['descriptors'].toLowerCase().includes("sex")){ continue }
+        //     }
+        //
+        //     if(gameData['name'].toLowerCase().includes("playtest")){ continue }
+        //     if(gameData['release_date']['coming_soon']) { continue }
+        //     if(type !== 'game'){ continue }
+        //     if(gameData['is_free'] === true) { isfree = true }
+        //     if(!gameData['recommendations']) { hasRecommendations = false}
+        //     if(isfree === false && !gameData['price_overview']) { continue }
+        //
+        //     jsonObject = {
+        //         "app_id": gameData['steam_appid'],
+        //         "name": gameData['name'],
+        //         "image": gameData['header_image'],
+        //         "date": gameData['release_date']['date'],
+        //         "price": isfree ? '0 kr' : gameData['price_overview']['final_formatted'],
+        //         "reviews": hasRecommendations ? gameData['recommendations']['total'] : 0,
+        //     }
+        //         returnData.push(jsonObject)
+        // }
     }catch(error){
         console.log(error);
     }
