@@ -1,12 +1,12 @@
 
 <template>
-  <h1>Your score: {{score}}</h1>
+  <h1>Score: {{score}}</h1>
 </template>
 
 <script>
 export default {
   props: {
-    score: String,
+    score: Number,
   }
 }
 </script>
