@@ -72,7 +72,7 @@ async function getGamesByAppIds(inputArray){
                     .filter(({supportedLanguages ,name, type, comingSoon, price, reviews, contentDescriptors, dejus, steamGermany}) => {
                     const descriptors = `${contentDescriptors} ${dejus} ${steamGermany}`.toLowerCase();
                     const supportedLanguageString = `${supportedLanguages}`.toLowerCase()
-                    const blockedTerms = ["sex", "nudity", "naked", "hentai"];
+                    const blockedTerms = ["sex", "nudity", "naked", "hentai", "nude"];
                     return (
                         supportedLanguageString.includes("english") &&
                         reviews !== "No reviews" &&
