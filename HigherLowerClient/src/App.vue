@@ -3,14 +3,6 @@ import { RouterLink, RouterView } from 'vue-router'
 </script>
 
 <template>
-  <header>
-      <nav>
-        <RouterLink to="/ex">Reviews</RouterLink>
-        <RouterLink to="/about">Prices</RouterLink>
-<!--        <RouterLink to="/exx">Release Dates</RouterLink>-->
-      </nav>
-  </header>
-
   <RouterView />
 </template>
 
