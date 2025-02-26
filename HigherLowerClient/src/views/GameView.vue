@@ -1,13 +1,17 @@
 <script>
 import Games from '@/components/Games.vue';
 import { ref, onBeforeMount } from "vue";
+import GameModeSelector from "@/components/GameModeSelector.vue";
 
 export default {
   components: {
+    GameModeSelector,
     Games,
   },
   setup() {
     const games = ref([]);
+    const gameMode = ref("price");
+    console.log(gameMode.value);
 
     onBeforeMount(async () => {
       try {
@@ -20,7 +24,7 @@ export default {
       }
     });
 
-    return {games};
+    return {games, gameMode};
   }
 };
 
@@ -38,9 +42,49 @@ function randomizeArray(inputArray) {
     <h2>Loading...</h2>
   </div>
   <div v-else>
+    <nav>
+      <GameModeSelector v-model:game-mode="gameMode" />
+    </nav>
     <div
       style="display: grid; grid-template-columns: repeat(2, 1fr); grid-gap: 200px; margin-top:10%">
-      <Games :games="games"/>
+      <Games :games="games" :game-mode="gameMode"/>
     </div>
   </div>
 </template>
+
+<style scoped>
+nav {
+  position:fixed;
+  left:45%;
+  top:1%;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+nav a.router-link-exact-active {
+  color: var(--color-text);
+}
+
+nav a.router-link-exact-active:hover {
+  background-color: transparent;
+}
+
+nav a {
+  display: inline-block;
+  padding: 0 1rem;
+  border-left: 1px solid var(--color-border);
+}
+
+nav a:first-of-type {
+  border: 0;
+}
+
+nav {
+  text-align: left;
+  margin-left: -1rem;
+  font-size: 2rem;
+  padding: 1rem 0;
+  margin-top: 1rem;
+}
+</style>
