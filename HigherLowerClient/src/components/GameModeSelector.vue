@@ -16,7 +16,6 @@ export default {
   methods: {
     setGameMode(mode) {
       this.$emit("update:gameMode", mode);
-      console.log(mode)
     },
   },
 };
