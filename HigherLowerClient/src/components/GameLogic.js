@@ -1,6 +1,4 @@
-import { ref, watch, onBeforeMount } from 'vue';
-
-// Store databaseHighscore globally so it persists across game mode changes
+import { ref, onBeforeMount } from 'vue';
 let databaseHighscore = ref(0);
 
 export default function GameLogic(gamesProp, gameMode = 'price') {
@@ -15,11 +13,22 @@ export default function GameLogic(gamesProp, gameMode = 'price') {
   const clickedSecondGame = ref(false);
   const message = ref("");
 
-  watch(gamesProp, (newGames) => {
-    if (newGames?.length > 0) {
-      games.value = newGames;
+  onBeforeMount(async () => {
+    try {
+      const response = await fetch('http://localhost:3000/GetHighScore');
+      const data = await response.json();
+
+      if (data.length > 0 && data[0]?.highscore !== undefined) {
+        highscore.value = data[0].highscore;
+
+        if (databaseHighscore.value === 0) {
+          databaseHighscore.value = data[0].highscore;
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching high score:", error);
     }
-  }, { immediate: true });
+  });
 
   const calculateScore = () => {
     if (clickedFirstGame.value && isFirstGameBetter.value) {
@@ -106,7 +115,6 @@ export default function GameLogic(gamesProp, gameMode = 'price') {
         method: "PUT",
         body: JSON.stringify({ highscore: newHighscore }),
       });
-
       if (!response.ok) {
         console.error("Failed to update high score on server.");
       } else {
@@ -117,22 +125,7 @@ export default function GameLogic(gamesProp, gameMode = 'price') {
     }
   };
 
-  onBeforeMount(async () => {
-    try {
-      const response = await fetch('http://localhost:3000/GetHighScore');
-      const data = await response.json();
 
-      if (data.length > 0 && data[0]?.highscore !== undefined) {
-        highscore.value = data[0].highscore;
-
-        if (databaseHighscore.value === 0) {
-          databaseHighscore.value = data[0].highscore;
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching high score:", error);
-    }
-  });
 
   return {
     highscore,
