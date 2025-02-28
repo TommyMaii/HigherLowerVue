@@ -2,7 +2,7 @@
 import HighScore from "@/components/HighScore.vue";
 import MessageComponent from "@/components/MessageComponent.vue";
 import CurrentScore from "@/components/CurrentScore.vue";
-import { ref, watch, computed } from "vue";
+import { ref, watch } from "vue";
 import GameLogic from "@/components/GameLogic.js";
 
 export default {
@@ -10,38 +10,43 @@ export default {
   props: { games: Array, gameMode: String },
 
   setup(props) {
-    const gameMode = ref(props.gameMode);
-    let text = ref("Guess the most expensive game");
-
-    let gameState = ref(GameLogic(props.games, gameMode.value));
-
-    const message = ref(gameState.value.message);
+    const gameState = ref(GameLogic(props.games, props.gameMode));
+    const message = ref("");
+    let ModeText = ref("Guess which game is more expensive")
 
     watch(
       () => gameState.value.message,
       (newMessage) => {
-        console.log("Message updated:", newMessage);
         message.value = newMessage;
-      }
+      },
+      {deep: true, immediate: true}
     );
-
-    // **Ensure game logic updates correctly when switching modes**
     watch(() => props.gameMode, (newMode) => {
       console.log(`Game mode changed to: ${newMode}`);
-      gameMode.value = newMode;
-      text.value =
-        newMode === "price"
-          ? "Guess the most expensive game"
-          : "Guess which game has more reviews";
+      ModeText.value = newMode === "reviews"
+        ? "Guess which game has more reviews"
+        : "Guess which game is more expensive";
 
-      let tempScore = gameState.value.score;
-      let tempHighscore = gameState.value.highscore;
-      let tempFirstCounter = gameState.value.firstCounter;
-      let tempSecondCounter = gameState.value.secondCounter;
+      const tempScore = gameState.value.score;
+      const tempHighscore = gameState.value.highscore;
+      const tempFirstCounter = gameState.value.firstCounter;
+      const tempSecondCounter = gameState.value.secondCounter;
+      const tempDatabaseHighscore = gameState.value.databaseHighscore
+        ? gameState.value.databaseHighscore.value
+        : 0;
+
 
       gameState.value = GameLogic(props.games, newMode);
+
+      gameState.value.highscore = Math.max(gameState.value.highscore, tempHighscore);
+
+      if (gameState.value.databaseHighscore instanceof Object && "value" in gameState.value.databaseHighscore) {
+        gameState.value.databaseHighscore.value = tempDatabaseHighscore;
+      } else {
+        gameState.value.databaseHighscore = ref(tempDatabaseHighscore);
+      }
+
       gameState.value.score = tempScore;
-      gameState.value.highscore = tempHighscore;
       gameState.value.firstCounter = tempFirstCounter;
       gameState.value.secondCounter = tempSecondCounter;
 
@@ -64,23 +69,14 @@ export default {
         if (!gameState.value.message.includes("lost")) {
           gameState.value.firstCounter += 2;
           gameState.value.secondCounter += 2;
-
           updateComparisonLogic();
         }
-
         message.value = gameState.value.message;
-
-        gameState.value = { ...gameState.value };
+        message.value = "";
       }, 2000);
     };
 
-    return {
-      gameMode,
-      gameState,
-      text,
-      handleGameGuess,
-      message,
-    };
+    return {gameState, handleGameGuess, message, ModeText};
   },
 };
 </script>
@@ -89,21 +85,21 @@ export default {
   <div class="games-container">
     <div class="game-card" @click="handleGameGuess(true, false)">
       <h2>{{ games[0]?.gamedata[gameState.firstCounter]?.name }}</h2>
-      <img :src="games[0]?.gamedata[gameState.firstCounter]?.image" alt="Game Image" />
-      <h2 >The price is: {{ games[0]?.gamedata[gameState.firstCounter]?.price }}</h2>
-      <h2 >It has {{ games[0]?.gamedata[gameState.firstCounter]?.reviews }} reviews</h2>
+      <img :src="games[0]?.gamedata[gameState.firstCounter]?.image" alt="Game Image"/>
+      <h2 v-if="gameMode === 'price'">The price is: {{ games[0]?.gamedata[gameState.firstCounter]?.price }}</h2>
+      <h2 v-if="gameMode === 'reviews'">It has {{ games[0]?.gamedata[gameState.firstCounter]?.reviews }} reviews</h2>
     </div>
 
     <div class="game-card" @click="handleGameGuess(false, true)">
       <h2>{{ games[0]?.gamedata[gameState.secondCounter]?.name }}</h2>
-      <img :src="games[0]?.gamedata[gameState.secondCounter]?.image" alt="Game Image" />
-      <h2>The price is: {{ games[0]?.gamedata[gameState.secondCounter]?.price }}</h2>
-      <h2>It has {{ games[0]?.gamedata[gameState.secondCounter]?.reviews }} reviews</h2>
+      <img :src="games[0]?.gamedata[gameState.secondCounter]?.image" alt="Game Image"/>
+      <h2 v-if="message !== '' && gameMode === 'price'">The price is: {{ games[0]?.gamedata[gameState.secondCounter]?.price }}</h2>
+      <h2 v-if="message !== '' && gameMode === 'reviews'">It has {{ games[0]?.gamedata[gameState.secondCounter]?.reviews }} reviews</h2>
     </div>
 
-    <HighScore :highscore="gameState.highscore" />
-    <MessageComponent :message="message" />
-    <CurrentScore :score="gameState.score" />
+    <HighScore :text="ModeText" :highscore="gameState.highscore"/>
+    <MessageComponent :message="message"/>
+    <CurrentScore :score="gameState.score"/>
   </div>
 </template>
 
