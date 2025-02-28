@@ -11,13 +11,11 @@ export default {
   setup() {
     const games = ref([]);
     const gameMode = ref("price");
-    console.log(gameMode.value);
 
     onBeforeMount(async () => {
       try {
         const response = await fetch('http://localhost:3000/GetGamesInfo');
-        const data = await response.json();
-        games.value = data;
+        games.value = await response.json();
         randomizeArray(games.value[0]['gamedata']);
       } catch (error) {
         console.error("Error fetching game data:", error);
@@ -62,18 +60,13 @@ nav {
   margin-top: 2rem;
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
 nav a {
   display: inline-block;
   padding: 0 1rem;
   border-left: 1px solid var(--color-border);
+  background-color: transparent;
+  color: var(--color-text);
+
 }
 
 nav a:first-of-type {
