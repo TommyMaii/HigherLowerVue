@@ -3,8 +3,8 @@
 
 This project is my attempt at a full-stack application and a fun game to play with my friends. It is inspired by the popular "Higher or Lower" game. In this game you get a set of 2 games and your job is to guess which of the 2 either has the higher price or more reviews. 
 
+![alt text]([http://url/to/img.png](https://imgur.com/a/gHpEUjG))
 
-https://imgur.com/a/gHpEUjG Image of how the game should look like.
 ## Documentation
 
 Run the Index.js file located in the HigherLowerApi folder to start the backend. Before running it, install the necessary dependencies by executing npm install in the terminal.
