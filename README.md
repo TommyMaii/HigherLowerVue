@@ -26,6 +26,15 @@ This project uses a PostgreSQL database with two tables:
 games - Contains a column named gamedata of type JSONB, which stores game-related data.
 gameappids - Contains a column named appids of type JSONB, which stores Steam App IDs.
 Ensure your database is properly set up before running the project.
+
+Database Images
+
+![Higher Lower Game Screenshot](higherlower2.png)
+
+![Higher Lower Game Screenshot](higherlower3.png)
+
+![Higher Lower Game Screenshot](higherlower4.png)
+
 ## Tech Stack
 
 **Client:** Vue
