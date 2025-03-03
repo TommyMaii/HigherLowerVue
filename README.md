@@ -3,7 +3,7 @@
 
 This project is my attempt at a full-stack application and a fun game to play with my friends. It is inspired by the popular "Higher or Lower" game. In this game you get a set of 2 games and your job is to guess which of the 2 either has the higher price or more reviews. 
 
-![alt text](https://imgur.com/a/gHpEUjG)
+![Higher Lower Game Screenshot](higherlower1.png)
 
 ## Documentation
 
