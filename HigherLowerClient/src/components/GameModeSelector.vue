@@ -14,6 +14,10 @@ export default {
     gameMode: String,
   },
   methods: {
+    /**
+     * sends back either the string price or reviews back to the parent component.
+     * @param mode
+     */
     setGameMode(mode) {
       this.$emit("update:gameMode", mode);
     },

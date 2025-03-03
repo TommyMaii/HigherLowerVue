@@ -5,10 +5,8 @@ const {getAppIds} = require("./db");
 const app = express();
 require("dotenv").config();
 var bodyParser = require('body-parser')
-
 app.use(bodyParser.json({ type: 'application/*+json' }))
 app.use(bodyParser.json())
-
 app.use(cors());
 
 app.listen(process.env.PORT || 3000, () => {

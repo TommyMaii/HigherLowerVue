@@ -26,6 +26,12 @@ export default {
   }
 };
 
+/**
+ * Function takes an array
+ * Randomizes and returns it.
+ * @param inputArray Type Array
+ * @returns {array}
+ */
 function randomizeArray(inputArray) {
   for (let i = 0; i < inputArray.length; i++) {
     let randomIndex = Math.floor(Math.random() * inputArray.length);
@@ -55,9 +61,11 @@ nav {
   position:fixed;
   left:45%;
   top:1%;
-  font-size: 12px;
   text-align: center;
   margin-top: 2rem;
+  margin-left: -6rem;
+  font-size: 2rem;
+  padding: 1rem 0;
 }
 
 nav a {
@@ -74,10 +82,7 @@ nav a:first-of-type {
 }
 
 nav {
-  text-align: left;
-  margin-left: -1rem;
-  font-size: 2rem;
-  padding: 1rem 0;
-  margin-top: 1rem;
+
+
 }
 </style>

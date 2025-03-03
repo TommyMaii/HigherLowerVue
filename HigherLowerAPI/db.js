@@ -12,6 +12,11 @@ const pool = new Pool({
     database: process.env.DB,
 });
 
+/**
+ * Gets all APPIds that passes the filter from the
+ * Steam API and pushes it to an AppIds array
+ * @returns {any[]}
+ */
 async function getAppIds(){
     let AppIds = []
     let count = 100;
@@ -38,20 +43,31 @@ async function getAppIds(){
     return AppIds;
 }
 
+/**
+ * Function takes an array of APPIds
+ * It then runs the APPIds towards the SteamAPI and gets game data.
+ * It then filters the data it gets back to ensure high quality data.
+ * The filter filters away most explicit games and
+ * In general games that doesn't have reviews, price, name it also checks if the game supports English which is most games
+ * and lastly checks if it actually is a game rather than DLC/Movie/Soundtrack
+ * @param inputArray
+ * @returns {{ date, steamGermany, image, reviews, supportedLanguages, comingSoon, price, dejus, name, type: *, app_id: *, contentDescriptors } []}
+ * Returns an array of objects with the properties above.
+ */
 async function getGamesByAppIds(inputArray){
-    let filteredGameArray;
+    let filteredGameArray = [];
     try {
 
         const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
         const responses = await Promise.allSettled(
             inputArray.map((appid, index) =>
-                delay(index * 500)
+                delay(index * 0)
                     .then(() => axios.get(`https://store.steampowered.com/api/appdetails?appids=${appid}`))
             )
         );
 
-         filteredGameArray = await responses
+        filteredGameArray = await responses
             .filter(result => result.status === "fulfilled")
             .map(result => result.value?.data ?? "")
             .flatMap(gameDataObj =>
@@ -90,10 +106,18 @@ async function getGamesByAppIds(inputArray){
     return filteredGameArray;
 }
 
+/**
+ * Function that gets values from an inputarray up to 160000th index
+ * and pushes those values into an AppIds array.
+ * @param inputArray
+ * @returns {any[]}
+ * Returns an array with randomized AppIds
+ * @constructor
+ */
 async function GetFilteredAppIds(inputArray) {
     let AppIds = [];
     for(let i = 0; i < 10000; i++){
-    let randomNumber = Math.floor(Math.random()*100000);
+    let randomNumber = Math.floor(Math.random()*160000);
         AppIds.push(inputArray[randomNumber]);
     }
     return AppIds;
