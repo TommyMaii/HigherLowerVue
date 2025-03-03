@@ -3,7 +3,7 @@
 
 This project is my attempt at a full-stack application and a fun game to play with my friends. It is inspired by the popular "Higher or Lower" game. In this game you get a set of 2 games and your job is to guess which of the 2 either has the higher price or more reviews. 
 
-![alt text](https://imgur.com/a/gHpEUjG)
+![Higher Lower Game Screenshot](higherlower1.png)
 
 ## Documentation
 
@@ -26,6 +26,15 @@ This project uses a PostgreSQL database with two tables:
 games - Contains a column named gamedata of type JSONB, which stores game-related data.
 gameappids - Contains a column named appids of type JSONB, which stores Steam App IDs.
 Ensure your database is properly set up before running the project.
+
+Database Images
+
+![Higher Lower Game Screenshot](higherlower2.png)
+
+![Higher Lower Game Screenshot](higherlower3.png)
+
+![Higher Lower Game Screenshot](higherlower4.png)
+
 ## Tech Stack
 
 **Client:** Vue
