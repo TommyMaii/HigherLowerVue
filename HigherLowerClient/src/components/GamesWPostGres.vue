@@ -4,6 +4,7 @@ import MessageComponent from "@/components/MessageComponent.vue";
 import CurrentScore from "@/components/CurrentScore.vue";
 import { ref, watch } from "vue";
 import GameLogic from "@/components/GameLogic.js";
+
 export default {
   components: { HighScore, MessageComponent, CurrentScore },
   props: { games: Array, gameMode: String },
@@ -17,7 +18,7 @@ export default {
     /**
      * Waits/Watches for when message in gameState/GameLogic changes then
      * changes the message value so it can pass it down to the MessageComponent.
-      */
+     */
     watch(
       () => gameState.value.message,
       (newMessage) => {
@@ -65,8 +66,8 @@ export default {
      * As it checks if game mode is price or reviews and then changes the logic depending on that.
      */
     const updateComparisonLogic = () => {
-      const firstGame = props.games[gameState.value.firstCounter];
-      const secondGame = props.games[gameState.value.secondCounter];
+      const firstGame = props.games[0]?.gamedata[gameState.value.firstCounter];
+      const secondGame = props.games[0]?.gamedata[gameState.value.secondCounter];
 
       if (firstGame && secondGame) {
         gameState.value.calculateComparison(firstGame, secondGame);
@@ -106,16 +107,16 @@ export default {
 
   <div class="games-container" >
     <div class="game-card" @click="handleGameGuess(true, false)" :style="{ pointerEvents: isUnclickable ? 'none' : 'auto' }">
-      <h2>{{ games[gameState.firstCounter].name }}</h2>
-      <img :src="games[gameState.firstCounter].image" alt="Game Image"/>
-      <h2 v-if="gameMode === 'price'">The price is: {{ games[gameState.firstCounter].price }}</h2>
-      <h2 v-if="gameMode === 'reviews'">It has {{ games[gameState.firstCounter].reviews }} reviews</h2>
+      <h2>{{ games[0]?.gamedata[gameState.firstCounter]?.name }}</h2>
+      <img :src="games[0]?.gamedata[gameState.firstCounter]?.image" alt="Game Image"/>
+      <h2 v-if="gameMode === 'price'">The price is: {{ games[0]?.gamedata[gameState.firstCounter]?.price }}</h2>
+      <h2 v-if="gameMode === 'reviews'">It has {{ games[0]?.gamedata[gameState.firstCounter]?.reviews }} reviews</h2>
     </div>
     <div class="game-card" @click="handleGameGuess(false, true)" :style="{ pointerEvents: isUnclickable ? 'none' : 'auto' }">
-      <h2>{{ games[gameState.secondCounter].name }}</h2>
-      <img :src="games[gameState.secondCounter].image" alt="Game Image"/>
-      <h2 v-if="message !== '' && gameMode === 'price'">The price is: {{ games[gameState.secondCounter].price }}</h2>
-      <h2 v-if="message !== '' && gameMode === 'reviews'">It has {{ games[gameState.secondCounter].reviews }} reviews</h2>
+      <h2>{{ games[0]?.gamedata[gameState.secondCounter]?.name }}</h2>
+      <img :src="games[0]?.gamedata[gameState.secondCounter]?.image" alt="Game Image"/>
+      <h2 v-if="message !== '' && gameMode === 'price'">The price is: {{ games[0]?.gamedata[gameState.secondCounter]?.price }}</h2>
+      <h2 v-if="message !== '' && gameMode === 'reviews'">It has {{ games[0]?.gamedata[gameState.secondCounter]?.reviews }} reviews</h2>
     </div>
 
     <HighScore style="margin-left: 8rem" :text="ModeText" :highscore="gameState.highscore"/>

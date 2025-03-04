@@ -21,7 +21,7 @@ export default function GameLogic(gamesProp, gameMode = 'price') {
    */
   onBeforeMount(async () => {
     try {
-      const response = await fetch('http://localhost:3000/getHighscore');
+      const response = await fetch('http://localhost:3000/GetHighScore');
       const data = await response.json();
 
       if (data.length > 0 && data[0]?.highscore !== undefined) {
@@ -66,14 +66,11 @@ export default function GameLogic(gamesProp, gameMode = 'price') {
 
       if (score.value > databaseHighscore.value) {
         databaseHighscore.value = score.value;
-        let obj = {
-          "highscore" : databaseHighscore.value
-        }
         pushHighscoreAfterLoss(databaseHighscore.value);
         message.value = "You lost, but you got a new high score!";
       }
 
-
+      setTimeout(() => location.reload(), 2000);
       return;
     }
 
@@ -118,7 +115,7 @@ export default function GameLogic(gamesProp, gameMode = 'price') {
    * @param isSecondClicked
    */
   const calculateGameAfterClick = (isFirstClicked, isSecondClicked) => {
-    if (!games.value) {
+    if (!games.value?.[0]?.gamedata) {
       console.error("Error: Games data is not available yet!");
       return;
     }
@@ -126,7 +123,7 @@ export default function GameLogic(gamesProp, gameMode = 'price') {
     clickedFirstGame.value = isFirstClicked;
     clickedSecondGame.value = isSecondClicked;
 
-    const data = games.value;
+    const data = games.value[0].gamedata;
     if (data[firstCounter.value] && data[secondCounter.value]) {
       calculateComparison(data[firstCounter.value], data[secondCounter.value]);
       showResultAfterGuess();
@@ -158,10 +155,8 @@ export default function GameLogic(gamesProp, gameMode = 'price') {
   const pushHighscoreAfterLoss = async (newHighscore) => {
     try {
       const response = await fetch('http://localhost:3000/UpdateHighscore', {
+        headers: { "Content-Type": "application/json" },
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json" // ✅ Add JSON header
-        },
         body: JSON.stringify({ highscore: newHighscore }),
       });
       if (!response.ok) {
@@ -173,6 +168,8 @@ export default function GameLogic(gamesProp, gameMode = 'price') {
       console.error("Error updating high score:", error);
     }
   };
+
+
 
   return {
     highscore,

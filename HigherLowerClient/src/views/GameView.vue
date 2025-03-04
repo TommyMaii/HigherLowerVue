@@ -14,9 +14,12 @@ export default {
 
     onBeforeMount(async () => {
       try {
-        const response = await fetch('http://localhost:3000/GetGamesInfo');
+        const response = await fetch('http://localhost:3000/getGames')
+        if (!response.ok) {
+          throw new Error("Failed to fetch games");
+        }
         games.value = await response.json();
-        randomizeArray(games.value[0]['gamedata']);
+        randomizeArray(games.value);
       } catch (error) {
         console.error("Error fetching game data:", error);
       }
