@@ -1,7 +1,11 @@
 
 # Higher Lower Game 
 
+###Test the game at https://tommymaii.github.io/HigherLowerFrontend/ (It will take a bit to boot because of how the backend is hosted)
+
 ![Higher Lower Game Screenshot](higherlower1.png)
+
+
 
 ## About 
 
