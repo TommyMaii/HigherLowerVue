@@ -1,7 +1,7 @@
 
 # Higher Lower Game 
 
-Test the game at https://tommymaii.github.io/HigherLowerFrontend/ (It will some time to boot if the server is sleeping.)
+Test the game at [Game link](https://tommymaii.github.io/HigherLowerFrontend/) (It will some time to boot if the server is sleeping.)
 
 ![Higher Lower Game Screenshot](higherlower1.png)
 
