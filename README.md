@@ -15,7 +15,6 @@ The program uses a postgres database to save the data, Node with Express for its
 
 Picture of the app.
 
-https://imgur.com/a/gHpEUjG 
 ## How to build
 
 ```
